@@ -15,7 +15,7 @@ interface InputProps extends ChakraInputProps {
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, label, error = null, ...rest },
+  { name, label, error = null, id, ...rest },
   ref
 ): JSX.Element => {
   return (
@@ -23,7 +23,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
       <ChakraInput
         ref={ref}
-        id={name}
+        id={id}
         name={name}
         focusBorderColor="pink.500"
         bgColor="gray.900"
