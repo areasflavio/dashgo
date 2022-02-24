@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -20,17 +20,35 @@ import {
 import NextLink from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 
-import { useUsers } from '../../hooks/useUsers';
+import { getUsers, useUsers } from '../../hooks/useUsers';
 import { queryClient } from '../../services/queryClient';
 import { api } from '../../services/api';
 
 import Header from '../../components/Header';
 import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
+import { GetServerSideProps } from 'next';
 
-export default function UserList(): JSX.Element {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
+interface UserListProps {
+  users: User[];
+  totalCount: number;
+}
+
+export default function UserList({
+  users,
+  totalCount,
+}: UserListProps): JSX.Element {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isFetching, error } = useUsers(page);
+  const { data, isLoading, isFetching, isSuccess, error } = useUsers(page, {
+    initialData: users,
+  });
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -159,3 +177,11 @@ export default function UserList(): JSX.Element {
     </Box>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const data = await getUsers(1);
+
+  return {
+    props: data ? { users: data.users, totalCount: data.totalCount } : {},
+  };
+};
